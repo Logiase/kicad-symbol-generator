@@ -1,0 +1,63 @@
+:root {
+  --bg: #0f1115;
+  --bg-elev: #171a21;
+  --bg-elev-2: #1e222b;
+  --border: #2a2f3a;
+  --border-strong: #3a4150;
+  --text: #d7dbe2;
+  --text-dim: #8b94a3;
+  --text-strong: #f3f5f8;
+  --accent: #4c8bf5;
+  --accent-bg: rgba(76, 139, 245, 0.15);
+  --danger: #e5534b;
+  --ok: #2ea043;
+  --radius: 7px;
+  --mono: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  --sans: system-ui, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',
+    sans-serif;
+
+  color-scheme: dark;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text-strong);
+  font-weight: 600;
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
