@@ -321,9 +321,6 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background-color: #fbfbf4;
-  background-image: linear-gradient(#e6e6da 1px, transparent 1px),
-    linear-gradient(90deg, #e6e6da 1px, transparent 1px);
-  background-size: 16px 16px;
   overflow: auto;
   display: flex;
   align-items: center;

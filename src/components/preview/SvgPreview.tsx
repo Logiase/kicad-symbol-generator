@@ -18,12 +18,20 @@ export function SvgPreview() {
   const rendered = useMemo(() => {
     if (!unit) return null
     const lay = layoutUnit(unit, layout)
-    return renderUnitSvg(lay, {
+    const options = {
       ...DEFAULT_SVG_OPTIONS,
       fontSize: layout.nameFontSize,
       showNames: doc.showPinNames,
       showNumbers: doc.showPinNumbers,
-    })
+    }
+
+    return {
+      preview: renderUnitSvg(lay, {
+        ...options,
+        showGrid: true,
+      }),
+      download: renderUnitSvg(lay, options),
+    }
   }, [unit, layout, doc.showPinNames, doc.showPinNumbers])
 
   return (
@@ -48,7 +56,7 @@ export function SvgPreview() {
             rendered &&
             downloadText(
               `${doc.name || 'symbol'}_unit${safeIndex + 1}.svg`,
-              rendered.svg,
+              rendered.download.svg,
               'image/svg+xml',
             )
           }
@@ -60,7 +68,7 @@ export function SvgPreview() {
         {rendered && (
           <div
             className="svg-holder"
-            dangerouslySetInnerHTML={{ __html: rendered.svg }}
+            dangerouslySetInnerHTML={{ __html: rendered.preview.svg }}
           />
         )}
       </div>

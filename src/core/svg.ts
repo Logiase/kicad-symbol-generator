@@ -9,6 +9,7 @@
 
 import type { PinLayout, UnitLayout } from './layout'
 import type { PinGraphicStyle } from './types'
+import { GRID_MIL } from './units'
 
 export interface SvgColors {
   outline: string
@@ -33,6 +34,8 @@ export interface SvgRenderOptions {
   nameOffset: number
   showNames: boolean
   showNumbers: boolean
+  showGrid: boolean
+  gridStep: number
   colors: SvgColors
   padding: number
 }
@@ -42,6 +45,8 @@ export const DEFAULT_SVG_OPTIONS: SvgRenderOptions = {
   nameOffset: 20,
   showNames: true,
   showNumbers: true,
+  showGrid: false,
+  gridStep: GRID_MIL,
   colors: KICAD_COLORS,
   padding: 120,
 }
@@ -126,12 +131,33 @@ export function renderUnitSvg(
   const width = bounds.maxX - bounds.minX + options.padding * 2
   const height = bounds.maxY - bounds.minY + options.padding * 2
   const viewBox = `${n(minX)} ${n(minY)} ${n(width)} ${n(height)}`
+  const content = options.showGrid
+    ? [renderGrid(minX, minY, width, height, options.gridStep), ...parts]
+    : parts
 
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" ` +
-    `font-family="monospace">\n${parts.join('\n')}\n</svg>`
+    `font-family="monospace">\n${content.join('\n')}\n</svg>`
 
   return { svg, viewBox, minX, minY, width, height }
+}
+
+function renderGrid(
+  minX: number,
+  minY: number,
+  width: number,
+  height: number,
+  step: number,
+): string {
+  return (
+    `<defs><pattern id="preview-grid" width="${n(step)}" height="${n(step)}" ` +
+    `patternUnits="userSpaceOnUse"><path d="M ${n(step)} 0 L 0 0 0 ${n(step)}" ` +
+    `fill="none" stroke="#e6e6da" stroke-width="2" /></pattern></defs>\n` +
+    `<rect x="${n(minX)}" y="${n(minY)}" width="${n(width)}" height="${n(height)}" ` +
+    `fill="#fbfbf4" />\n` +
+    `<rect x="${n(minX)}" y="${n(minY)}" width="${n(width)}" height="${n(height)}" ` +
+    `fill="url(#preview-grid)" />`
+  )
 }
 
 function renderPin(
