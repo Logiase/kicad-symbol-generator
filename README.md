@@ -95,3 +95,7 @@ npm run preview  # preview the production build
 The production base path is `/kicad-symbol-generator/` (see
 [vite.config.ts](vite.config.ts)). If your repository has a different name,
 update `base` accordingly.
+
+## License
+
+This project is licensed under [MIT](./LICENSE)
