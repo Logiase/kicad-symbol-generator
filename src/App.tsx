@@ -35,6 +35,14 @@ function App() {
           <Button variant="ghost" onClick={toggle}>
             {t('lang.toggle')}
           </Button>
+          <a
+            className="btn btn-ghost"
+            href="https://github.com/Logiase/kicad-symbol-generator"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
         </div>
       </header>
 
