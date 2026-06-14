@@ -1,8 +1,12 @@
+import { useRef, type KeyboardEvent } from 'react'
 import { useI18n } from '../i18n'
 import { useStore } from '../state/store'
 import type { Pin } from '../core/types'
 import { sideOptions, styleOptions, typeOptions } from './options'
 import { Button, NumberInput, Select } from './ui'
+
+/** Editable columns that support Enter-to-next-row navigation, in order. */
+type CellCol = 'number' | 'name' | 'type' | 'side' | 'style' | 'length'
 
 export function PinTable() {
   const { t } = useI18n()
@@ -10,6 +14,7 @@ export function PinTable() {
   const unit = state.doc.units.find((u) => u.id === state.activeUnitId)
   const pins = unit?.pins ?? []
   const selected = new Set(state.selectedPinIds)
+  const tableRef = useRef<HTMLTableElement>(null)
 
   const types = typeOptions(t)
   const styles = styleOptions(t)
@@ -20,9 +25,34 @@ export function PinTable() {
   const update = (pinId: string, patch: Partial<Pin>) =>
     dispatch({ type: 'updatePin', pinId, patch })
 
+  const focusCell = (row: number, col: CellCol) => {
+    const el = tableRef.current?.querySelector<HTMLElement>(
+      `[data-cell="${row}:${col}"]`,
+    )
+    if (!el) return
+    el.focus()
+    if (el instanceof HTMLInputElement && el.type === 'text') el.select()
+  }
+
+  /** On Enter, move focus to the same column in the next row. */
+  const onCellKeyDown = (
+    e: KeyboardEvent<HTMLElement>,
+    row: number,
+    col: CellCol,
+  ) => {
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    focusCell(row + 1, col)
+  }
+
+  const cellProps = (row: number, col: CellCol) => ({
+    'data-cell': `${row}:${col}`,
+    onKeyDown: (e: KeyboardEvent<HTMLElement>) => onCellKeyDown(e, row, col),
+  })
+
   return (
     <div className="pin-table-wrap">
-      <table className="pin-table">
+      <table className="pin-table" ref={tableRef}>
         <thead>
           <tr>
             <th className="col-sel">
@@ -49,7 +79,7 @@ export function PinTable() {
           </tr>
         </thead>
         <tbody>
-          {pins.map((pin) => (
+          {pins.map((pin, row) => (
             <tr key={pin.id} className={selected.has(pin.id) ? 'selected' : ''}>
               <td className="col-sel">
                 <input
@@ -65,6 +95,7 @@ export function PinTable() {
                   className="input cell"
                   value={pin.number}
                   onChange={(e) => update(pin.id, { number: e.target.value })}
+                  {...cellProps(row, 'number')}
                 />
               </td>
               <td>
@@ -72,6 +103,7 @@ export function PinTable() {
                   className="input cell"
                   value={pin.name}
                   onChange={(e) => update(pin.id, { name: e.target.value })}
+                  {...cellProps(row, 'name')}
                 />
               </td>
               <td>
@@ -81,6 +113,7 @@ export function PinTable() {
                   onValue={(v) =>
                     update(pin.id, { electricalType: v as Pin['electricalType'] })
                   }
+                  {...cellProps(row, 'type')}
                 />
               </td>
               <td>
@@ -88,6 +121,7 @@ export function PinTable() {
                   value={pin.side}
                   options={sides}
                   onValue={(v) => update(pin.id, { side: v as Pin['side'] })}
+                  {...cellProps(row, 'side')}
                 />
               </td>
               <td>
@@ -97,6 +131,7 @@ export function PinTable() {
                   onValue={(v) =>
                     update(pin.id, { graphicStyle: v as Pin['graphicStyle'] })
                   }
+                  {...cellProps(row, 'style')}
                 />
               </td>
               <td className="col-sel">
@@ -112,6 +147,7 @@ export function PinTable() {
                   onValue={(n) => update(pin.id, { length: n })}
                   step={50}
                   min={0}
+                  {...cellProps(row, 'length')}
                 />
               </td>
               <td className="col-act">
